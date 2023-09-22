@@ -1,13 +1,15 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import date
+# from api.workers.schemas import Worker
+# from api.tasks.schemas import TaskBase
 
 
-class BusyBase(BaseModel):
-    ...
+# class BusyWorker(Worker):
+#     tasks: list[TaskBase]
 
 
-class Busy(BusyBase):
-    ...
+# class Busy(BusyWorker):
+#     ...
 
 
 class TaskBase(BaseModel):

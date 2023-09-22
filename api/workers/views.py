@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from fastapi import HTTPException
 from fastapi import status
 from fastapi import Depends
+# from sqlalchemy import Result, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import database
@@ -19,6 +20,11 @@ async def get_workers(db: AsyncSession = Depends(database.scoped_db_dependency))
 @router.post("/", response_model=Worker)
 async def create_worker(worker_create: WorkerCreate, db: AsyncSession = Depends(database.scoped_db_dependency)):
     return await crud.create_worker(db=db, worker_create=worker_create)
+
+
+@router.get("/busy/", response_model=list[Worker])
+async def get_busy_workers_with_tasks(db: AsyncSession = Depends(database.scoped_db_dependency)):
+    return await crud.get_workers_with_tasks(db=db)
 
 
 @router.get("/{worker_id}/", response_model=Worker)
