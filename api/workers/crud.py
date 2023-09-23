@@ -19,11 +19,18 @@ async def get_workers(db: AsyncSession) -> list[Worker]:
 
 async def get_workers_with_tasks(db: AsyncSession):
     query = select(Worker).options(selectinload(Worker.tasks))
-    # .order_by(func.count(Worker.tasks)
     workers: Iterable[Worker] = await db.scalars(query)
     worker_full: list[Worker] = [
         jsonable_encoder(worker) for worker in workers]
-    return JSONResponse(content=worker_full)
+
+    orderw: list[int] = [len(worker["tasks"])  # type: ignore
+                         for worker in worker_full]
+    orderw.sort(reverse=True)
+
+    new_b, new_worker_full = zip(
+        *[(b, a) for b, a in sorted(zip(orderw, worker_full))])
+
+    return JSONResponse(content=new_worker_full)
 
 
 async def get_worker(db: AsyncSession, worker_id: int) -> Worker | None:
