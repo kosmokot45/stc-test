@@ -16,11 +16,6 @@ async def get_tasks(db: AsyncSession = Depends(database.scoped_db_dependency)):
     return await crud.get_tasks(db=db)
 
 
-@router.get("/second/")  # , response_model=list[Task])
-async def get_workers_todo(db: AsyncSession = Depends(database.scoped_db_dependency)):
-    return await crud.get_workers_todo(db=db)
-
-
 @router.post("/", response_model=Task)
 async def create_task(task_create: TaskCreate, db: AsyncSession = Depends(database.scoped_db_dependency)):
     return await crud.create_task(db=db, task_create=task_create)
