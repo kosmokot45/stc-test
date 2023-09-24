@@ -1,6 +1,5 @@
 from typing import Iterable
 from sqlalchemy import select
-from sqlalchemy import func
 from sqlalchemy.orm import selectinload
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,17 +19,19 @@ async def get_workers(db: AsyncSession) -> list[Worker]:
 async def get_workers_with_tasks(db: AsyncSession):
     query = select(Worker).options(selectinload(Worker.tasks))
     workers: Iterable[Worker] = await db.scalars(query)
-    worker_full: list[Worker] = [
+
+    worker_dict: list[Worker] = [
         jsonable_encoder(worker) for worker in workers]
 
-    orderw: list[int] = [len(worker["tasks"])  # type: ignore
-                         for worker in worker_full]
-    orderw.sort(reverse=True)
+    for worker in worker_dict:
+        worker["task_count"] = len(worker["tasks"])
 
-    new_b, new_worker_full = zip(
-        *[(b, a) for b, a in sorted(zip(orderw, worker_full))])
+    worker_dict.sort(key=lambda cnt: cnt["task_count"], reverse=True)
 
-    return JSONResponse(content=new_worker_full)
+    for worker in worker_dict:
+        worker.pop("task_count")
+
+    return JSONResponse(content=worker_dict)
 
 
 async def get_worker(db: AsyncSession, worker_id: int) -> Worker | None:

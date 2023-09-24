@@ -16,7 +16,7 @@ async def get_tasks(db: AsyncSession = Depends(database.scoped_db_dependency)):
     return await crud.get_tasks(db=db)
 
 
-@router.get("/second/")
+@router.get("/second/")  # , response_model=list[Task])
 async def get_workers_todo(db: AsyncSession = Depends(database.scoped_db_dependency)):
     return await crud.get_workers_todo(db=db)
 

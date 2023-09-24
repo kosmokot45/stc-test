@@ -1,11 +1,13 @@
 from typing import Iterable
-from sqlalchemy import select, func
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
-from .schemas import TaskCreate, TaskUpdate
+from .schemas import TaskCreate, TaskUpdate, LastEndpoint
 from core.models import Task
+from core.models import Worker
 
 
 async def get_tasks(db: AsyncSession) -> list[Task]:
@@ -15,40 +17,25 @@ async def get_tasks(db: AsyncSession) -> list[Task]:
     return list(tasks)
 
 
-async def get_workers_todo(db: AsyncSession):
-    query = select(Task)
-    result: Iterable[Task] = await db.scalars(query)
-    tasks_full: list[Task] = [
-        jsonable_encoder(task) for task in result]
-    tasks: list[Task] = []
-    parent_workers: list[int] = []
-    for task in tasks_full:
-        if task["status"] == "in progress" and task["parent"] != None and task["parent"]["status"] == "not in progress":  # type: ignore
-            tasks.append(task["parent"])  # type: ignore
-            # parent_workers.append(task["parent"]["worker_id"])  # type: ignore
-            query = select(func.count("*")).select_from(Task).where(
-                Task.worker_id == task["worker_id"])
-            result_w: Result = await db.execute(query)
-            cnt = result_w.all()[0][0]
-            print("******")
-            print(cnt, task["worker_id"])
-            print("******")
-            if cnt >= 6:
-                parent_workers.append(task["worker_id"])
-            else:
-                parent_workers.append(1)
-    print(parent_workers)
-    # print("******")
-    # print(result_w.all()[0][0])
-    # print("******")
-    # найти наименее загруженного
-    ...
-    # посчтитать по тем таскам сколько задач
-    # print(parent_workers)
-    # query = select(Task).where(Task.worker_id.in_(parent_workers))
-    # result: Iterable[Task] = await db.scalars(query)
-    return JSONResponse(content=tasks)
-    return query
+async def get_workers_todo(db: AsyncSession):  # -> list[Task]:
+
+    final_result: list[LastEndpoint] = []
+    # Take priority tasks
+    query = select(Task).options(selectinload(Task.parent)).filter(Task.status=="in progress", Task.parent.has(Task.status=="not in progress"))
+    tasks: Iterable[Task]= await db.scalars(query)
+    # Find workers and collect final list
+    query = select(Worker).options(selectinload(Worker.tasks))
+    workers: Iterable[Worker] = await db.scalars(query)
+    
+    workers_tasks: dict[int, int] = {worker.id:len(worker.tasks) for worker in workers}
+    for task in tasks:
+        free_worker_id: int = min(workers_tasks, key=workers_tasks.get)
+        priority: int = workers_tasks[task.worker_id] - workers_tasks[free_worker_id]
+        worker: Worker = await db.get(Worker, task.worker_id) if priority <= 2 else await db.get(Worker, free_worker_id)
+        final_result.append({'Task': task.parent.name, 'Deadline': str(task.parent.deadline), 'Worker': worker.name})
+        
+    return JSONResponse(content=final_result)
+
 
 
 async def get_task(db: AsyncSession, task_id: int) -> Task | None:
@@ -56,7 +43,7 @@ async def get_task(db: AsyncSession, task_id: int) -> Task | None:
 
 
 async def create_task(db: AsyncSession, task_create: TaskCreate) -> Task:
-    task = Task(**task_create.model_dump())
+    task=Task(**task_create.model_dump())
     db.add(task)
     await db.commit()
     return task

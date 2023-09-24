@@ -14,4 +14,5 @@ class Worker(Base):
     role: Mapped[str]
 
     tasks: Mapped[list["Task"]] = relationship(
-        back_populates="worker")
+        back_populates="worker"
+    )
