@@ -1,5 +1,0 @@
-fastapi[all]
-sqlalchemy
-alembic
-psycopg2
-asyncpg
