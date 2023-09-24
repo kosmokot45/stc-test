@@ -18,7 +18,6 @@ class TaskBase(BaseModel):
 class WorkerBase(BaseModel):
     name: str
     role: str
-    # tasks: Optional[list[TaskBase | None]]
 
 
 class WorkerCreate(WorkerBase):
@@ -35,5 +34,5 @@ class Worker(WorkerBase):
     id: int
 
 
-class WorkerBusy(BaseModel):
+class WorkerBusy(Worker):
     tasks: list[TaskBase | None]

@@ -22,11 +22,6 @@ async def create_worker(worker_create: WorkerCreate, db: AsyncSession = Depends(
     return await crud.create_worker(db=db, worker_create=worker_create)
 
 
-@router.get("/busy/", response_model=list[Worker])
-async def get_busy_workers_with_tasks(db: AsyncSession = Depends(database.scoped_db_dependency)):
-    return await crud.get_workers_with_tasks(db=db)
-
-
 @router.get("/{worker_id}/", response_model=Worker)
 async def get_worker(worker_id: int, db: AsyncSession = Depends(database.scoped_db_dependency)):
     worker = await crud.get_worker(db=db, worker_id=worker_id)
