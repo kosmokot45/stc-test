@@ -16,7 +16,7 @@ class Task(Base):
     deadline: Mapped[date]
     status: Mapped[str]
     parent_id: Mapped[int | None] = mapped_column(ForeignKey("tasks.id"))
-    parent: Mapped["Task"] = relationship("Task", lazy="joined", join_depth=2)
+    child: Mapped["Task"] = relationship("Task", lazy="joined", join_depth=2)
 
     # worker_id: Mapped[int | None] = mapped_column(ForeignKey("workers.id"))
     worker_id: Mapped[int] = mapped_column(ForeignKey("workers.id"))
