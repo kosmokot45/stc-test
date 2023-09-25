@@ -3,7 +3,7 @@ from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .schemas import TaskCreate, TaskUpdate
-from core.models import Task
+from app.core.models import Task
 
 
 async def get_tasks(db: AsyncSession) -> list[Task]:

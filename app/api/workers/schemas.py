@@ -36,3 +36,7 @@ class Worker(WorkerBase):
 
 class WorkerBusy(Worker):
     tasks: list[TaskBase | None]
+
+
+class WorkerCnt(WorkerBusy):
+    tasks_cnt: int

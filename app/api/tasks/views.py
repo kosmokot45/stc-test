@@ -4,7 +4,7 @@ from fastapi import status
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.models import database
+from app.core.models import database
 from . import crud
 from .schemas import Task, TaskCreate, TaskUpdate
 

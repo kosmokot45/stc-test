@@ -5,11 +5,11 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from .schemas import LastEndpoint
-from core.models import Task
-from core.models import Worker
+from app.core.models import Task
+from app.core.models import Worker
 
 
-async def get_workers_todo(db: AsyncSession):  # -> list[Task]:
+async def get_workers_todo(db: AsyncSession):# -> list[LastEndpoint]:
 
     final_result: list[LastEndpoint] = []
     # Take priority tasks
@@ -21,11 +21,13 @@ async def get_workers_todo(db: AsyncSession):  # -> list[Task]:
     
     workers_tasks: dict[int, int] = {worker.id:len(worker.tasks) for worker in workers}
     for task in tasks:
-        free_worker_id: int = min(workers_tasks, key=workers_tasks.get)
-        priority: int = workers_tasks[task.worker_id] - workers_tasks[free_worker_id]
-        worker: Worker = await db.get(Worker, task.worker_id) if priority <= 2 else await db.get(Worker, free_worker_id)
-        final_result.append({'Task': dict(task), 'Deadline': str(task.child.deadline), 'Worker': worker.name})
-        
+        free_worker_id: int = min(workers_tasks, key=workers_tasks.get) # type: ignore
+        priority: int = workers_tasks[task.worker_id] - workers_tasks[free_worker_id] # type: ignore
+        worker: Worker = await db.get(Worker, task.worker_id) if priority <= 2 else await db.get(Worker, free_worker_id) # type: ignore
+        final_result.append({'Task': task.name, 'Deadline': str(task.child.deadline), 'Worker': worker.name}) # type: ignore
+    
+    # print(final_result)
+    # return final_result
     return JSONResponse(content=final_result)
 
 
@@ -33,7 +35,7 @@ async def get_workers_with_tasks(db: AsyncSession):
     query = select(Worker).options(selectinload(Worker.tasks))
     workers: Iterable[Worker] = await db.scalars(query)
 
-    worker_dict: list[Worker] = [
+    worker_dict = [
         jsonable_encoder(worker) for worker in workers]
 
     for worker in worker_dict:

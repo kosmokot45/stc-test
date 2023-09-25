@@ -5,7 +5,8 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.ext.asyncio import async_scoped_session
 
-from core.config import settings
+from app.core.config import settings
+# from
 # from core.init_db import init_db
 
 

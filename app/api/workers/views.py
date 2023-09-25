@@ -5,7 +5,7 @@ from fastapi import Depends
 # from sqlalchemy import Result, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.models import database
+from app.core.models import database
 from . import crud
 from .schemas import Worker, WorkerCreate, WorkerUpdate
 

@@ -1,10 +1,10 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from api.workers.schemas import WorkerCreate
-from api.workers.crud import create_worker
-from api.tasks.schemas import TaskCreate
-from api.tasks.crud import create_task
-from core.models.database import database
+from app.api.workers.schemas import WorkerCreate
+from app.api.workers.crud import create_worker
+from app.api.tasks.schemas import TaskCreate
+from app.api.tasks.crud import create_task
+from app.core.models.database import database
 from datetime import date
 
 

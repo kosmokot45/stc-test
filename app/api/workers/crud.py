@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from .schemas import WorkerCreate, WorkerUpdate
-from core.models import Worker
+from app.core.models import Worker
 
 
 async def get_workers(db: AsyncSession) -> list[Worker]:
