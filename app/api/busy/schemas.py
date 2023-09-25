@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 from datetime import date
-# from workers.schemas import Worker
 
 
 class LastEndpoint(BaseModel):
