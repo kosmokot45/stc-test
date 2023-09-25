@@ -1,11 +1,12 @@
 from fastapi import FastAPI, Depends
-from contextlib import asynccontextmanager
-from .core.config import settings
-from .core.models import Base, database
-from app.api import router as api_router
-from app.core.init_db import init_db
-
 from sqlalchemy.ext.asyncio import AsyncSession
+from contextlib import asynccontextmanager
+
+from app.core.config import settings
+from app.core.models import Base
+from app.core.models import database
+from app.core.init_db import init_db
+from app.api import router as api_router
 
 
 @asynccontextmanager

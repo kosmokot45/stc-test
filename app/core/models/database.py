@@ -6,8 +6,6 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.ext.asyncio import async_scoped_session
 
 from app.core.config import settings
-# from
-# from core.init_db import init_db
 
 
 class Database:

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import relationship
 
 if TYPE_CHECKING:
     from .task import Task

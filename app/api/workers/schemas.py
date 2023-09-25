@@ -1,6 +1,6 @@
 # from typing import TYPE_CHECKING
-from pydantic import BaseModel, ConfigDict
-# from typing import Optional
+from pydantic import BaseModel
+from pydantic import ConfigDict
 from datetime import date
 
 # if TYPE_CHECKING:

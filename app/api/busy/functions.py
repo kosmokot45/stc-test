@@ -9,25 +9,23 @@ from app.core.models import Task
 from app.core.models import Worker
 
 
-async def get_workers_todo(db: AsyncSession):# -> list[LastEndpoint]:
-
+async def get_workers_todo(db: AsyncSession):  # -> list[LastEndpoint]:
     final_result: list[LastEndpoint] = []
     # Take priority tasks
-    query = select(Task).options(selectinload(Task.child)).filter(Task.status=="in progress", Task.child.has(Task.status=="not in progress"))
-    tasks: Iterable[Task]= await db.scalars(query)
+    query_tasks = select(Task).options(selectinload(Task.child)).filter(
+        Task.status == "in progress", Task.child.has(Task.status == "not in progress"))
+    tasks: Iterable[Task] = await db.scalars(query_tasks)
     # Find workers and collect final list
-    query = select(Worker).options(selectinload(Worker.tasks))
-    workers: Iterable[Worker] = await db.scalars(query)
-    
-    workers_tasks: dict[int, int] = {worker.id:len(worker.tasks) for worker in workers}
+    query_workers = select(Worker).options(selectinload(Worker.tasks))
+    workers: Iterable[Worker] = await db.scalars(query_workers)
+
+    workers_tasks: dict[int, int] = {worker.id: len(worker.tasks) for worker in workers}
     for task in tasks:
-        free_worker_id: int = min(workers_tasks, key=workers_tasks.get) # type: ignore
-        priority: int = workers_tasks[task.worker_id] - workers_tasks[free_worker_id] # type: ignore
+        free_worker_id: int = min(workers_tasks, key=workers_tasks.get)  # type: ignore
+        priority: int = workers_tasks[task.worker_id] - workers_tasks[free_worker_id]  # type: ignore
         worker: Worker = await db.get(Worker, task.worker_id) if priority <= 2 else await db.get(Worker, free_worker_id) # type: ignore
-        final_result.append({'Task': task.name, 'Deadline': str(task.child.deadline), 'Worker': worker.name}) # type: ignore
-    
-    # print(final_result)
-    # return final_result
+        final_result.append({'task_id': task.child.id, 'task_name': task.child.name, 'Deadline': str(task.child.deadline), 'Worker': worker.name})  # type: ignore
+
     return JSONResponse(content=final_result)
 
 

@@ -18,7 +18,7 @@ async def get_task(db: AsyncSession, task_id: int) -> Task | None:
 
 
 async def create_task(db: AsyncSession, task_create: TaskCreate) -> Task:
-    task=Task(**task_create.model_dump())
+    task = Task(**task_create.model_dump())
     db.add(task)
     await db.commit()
     return task

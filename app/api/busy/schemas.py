@@ -1,9 +1,10 @@
 from pydantic import BaseModel
 from datetime import date
-# from api.tasks.schemas import Task
+# from workers.schemas import Worker
 
 
 class LastEndpoint(BaseModel):
-    task: str
+    task_id: int
+    task_name: str
     deadline: date
     name: str

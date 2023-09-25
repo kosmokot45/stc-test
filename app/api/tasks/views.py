@@ -8,6 +8,7 @@ from app.core.models import database
 from . import crud
 from .schemas import Task, TaskCreate, TaskUpdate
 
+
 router = APIRouter(tags=["Tasks"])
 
 
