@@ -11,5 +11,5 @@ python -m venv venv
 .\venv\Scripts\activate
 {pip install poetry}
 poetry install
-uvicorn main:app {--reload}
+uvicorn app.main:app {--reload}
 ```
